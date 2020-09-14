@@ -30,23 +30,34 @@ Code:
 
 ```python
 class MajorityChecker:
-    
     def __init__(self, arr: List[int]):
+        # create a dictionary of numbers and their index locations
         num_locations = defaultdict(list)
         for i, num in enumerate(arr):
             num_locations[num].append(i)
+
+        # sort the dictionary items by index location list length
+        # presumably to get to the largest repeated number ASAP
         self.occur = sorted(num_locations.items(), reverse=True, key=lambda x: len(x[1]))
         print(f"NUM_LOCATIONS:\n{num_locations}")
         print(f"SELF.OCCUR:\n{self.occur}")
 
     def query(self, left: int, right: int, threshold: int) -> int:
         for num, locations in self.occur:
+        
+            # return immediately if threshold isn't met by largest repeat
             if len(locations) < threshold:
                 return -1
+
+            # i and j are virtual markers that expose how many
+            # repeats of a specific number occur when i is subtracted from j
             i = bisect.bisect_left(locations, left)
             j = bisect.bisect_right(locations, right)
             print(f"QUERY: ({left}, {right}, {threshold})")
             print(f"BISECT_LEFT: {i}, BISECT_RIGHT: {j}")
+
+            # if repeats (defined by j - i) meet or exceed threshold
+            # return current number
             if j - i >= threshold:
                 return num
         return -1
